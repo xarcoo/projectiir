@@ -1,5 +1,5 @@
 <?php
-session_start(); 
+session_start();
 
 require_once __DIR__ . '/vendor/autoload.php';
 include_once('simple_html_dom.php');
@@ -7,20 +7,6 @@ include_once('simple_html_dom.php');
 use Phpml\FeatureExtraction\TokenCountVectorizer;
 use Phpml\Tokenization\WhitespaceTokenizer;
 use Phpml\FeatureExtraction\TfIdfTransformer;
-
-// echo "PROJECT IIR <br>";
-// echo "KEPO.COM";
-// echo '<form action="index.php" method="POST">';
-// echo '<b>Keyword :</b> <input type="text" name="keyword"><br><br>';
-// echo '<b>Source :</b> ';
-// echo '<input type="checkbox" name="source[]" value="X" checked/>X ';
-// echo '<input type="checkbox" name="source[]" value="IG"/>Instagram';
-// echo '<input type="checkbox" name="source[]" value="YT"/>Youtube<br>';
-// echo '<b>Similarity Method :</b> ';
-// echo '<input type="radio" name="method" value="Asymetric" checked/>Asymetric ';
-// echo '<input type="radio" name="method" value="Overlap"/>Overlap<br><br>';
-// echo '<input type="submit" name="crawl" value="Search"> ';
-// echo '</form>';
 
 $i = 0;
 $data_crawling = array();
@@ -47,9 +33,6 @@ if (isset($_POST['crawl'])) {
                     $preprocessCommand = escapeshellcmd("python $preprocessScript " . escapeshellarg(str_replace(" ", "@@", $line)));
                     $preprocessedOutput = shell_exec("$preprocessCommand");
 
-                    // $sendText = str_replace(" ", "@@", $line);
-                    // $preprocessedOutput = shell_exec("python $preprocessScript $sendText");
-
                     array_push($data_crawling, array('source' => 'YouTube', 'original' => $line, 'preprocessed' => $preprocessedOutput, 'similarity' => 0.0));
                     array_push($sample_data, $preprocessedOutput);
                 }
@@ -70,27 +53,10 @@ if (isset($_POST['crawl'])) {
                     $preprocessCommand = escapeshellcmd("python $preprocessScript " . escapeshellarg(str_replace(" ", "@@", $line)));
                     $preprocessedOutput = shell_exec("$preprocessCommand");
 
-                    // $sendText = str_replace(" ", "@@", $line);
-                    // $preprocessedOutput = shell_exec("python $preprocessScript $sendText");
-
                     array_push($data_crawling, array('source' => 'Twitter', 'original' => $line, 'preprocessed' => $preprocessedOutput, 'similarity' => 0.0));
                     array_push($sample_data, $preprocessedOutput);
                 }
             }
-            // $html = file_get_html('https://x.com/');
-            // $i = 0;
-            // foreach ($html->find('div[class="css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3"]') as $posts) {
-            //     if ($i > 9) break;
-            //     else {
-            //         $text = $posts->find('span[clas="css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3"]', 0)->innertext;
-            //         $sendText = str_replace(" ", "##", $text);
-            //         $stopText = shell_exec("python preprocess.py $sendText");
-
-            //         array_push($data_crawling, array($src, $text, $stopText, 'similarity' => 0.0));
-            //         array_push($sample_data, $stopText);
-            //     }
-            //     $i++;
-            // }
         } elseif ($src == 'IG') {
             $keyword = escapeshellarg($_POST['keyword']);
             $pythonScript = 'insta_crawler.py';
@@ -105,9 +71,6 @@ if (isset($_POST['crawl'])) {
                     $preprocessScript = 'preprocess.py';
                     $preprocessCommand = escapeshellcmd("python $preprocessScript " . escapeshellarg(str_replace(" ", "@@", $line)));
                     $preprocessedOutput = shell_exec("$preprocessCommand");
-
-                    // $sendText = str_replace(" ", "@@", $line);
-                    // $preprocessedOutput = shell_exec("python $preprocessScript $sendText");
 
                     array_push($data_crawling, array('source' => 'Instagram', 'original' => $line, 'preprocessed' => $preprocessedOutput, 'similarity' => 0.0));
                     array_push($sample_data, $preprocessedOutput);
@@ -142,7 +105,6 @@ if (isset($_POST['crawl'])) {
                 $result = 0;
             }
 
-            // echo "D" . ($i + 1) . " dan Q = " . round($result, 2) . "<br>";
             $data_crawling[$i]['similarity'] = $result;
         }
     } else {
@@ -162,7 +124,6 @@ if (isset($_POST['crawl'])) {
                 $result = 0;
             }
 
-            // echo "D" . ($i + 1) . " dan Q = " . round($result, 2) . "<br>";
             $data_crawling[$i]['similarity'] = $result;
         }
         // $_SESSION['data_crawling'] = $data_crawling;
@@ -171,7 +132,7 @@ if (isset($_POST['crawl'])) {
     //     $data_crawling = $_SESSION['data_crawling'];
     //     $total_results = count($data_crawling);
     //     $paged_results = array_slice($data_crawling, $offset, $results_per_page); // Ambil hasil untuk halaman ini
-    
+
     //     // Tampilkan hasil paging
     //     if (!empty($paged_results)) {
     //         foreach ($paged_results as $row) {
@@ -184,10 +145,10 @@ if (isset($_POST['crawl'])) {
     //     } else {
     //         echo "No results to display.";
     //     }
-    
+
     //     // Tampilkan navigasi paging
     //     $total_pages = ceil($total_results / $results_per_page);
-    
+
     //     echo '<div style="text-align:center;">';
     //     if ($page > 1) {
     //         echo '<a href="?page=' . ($page - 1) . '">Previous</a> ';
@@ -204,21 +165,12 @@ if (isset($_POST['crawl'])) {
     //     }
     //     echo '</div>';
     // }
-
-    $columns = array_column($data_crawling, 'similarity');
-    array_multisort($columns, SORT_DESC, $data_crawling);
-    foreach ($data_crawling as $row) {
-        echo "<b><u>Source:</u></b> " . $row['source'] . "<br>";
-        echo "<b><u>Original Text:</u></b><br>" . $row['original'] . "<br>";
-        echo "<b><u>Preprocessing Result:</u></b><br>" . $row['preprocessed'] . "<br>";
-        echo "<b><u>Similarity:</u></b> " . round($row["similarity"], 5);
-        echo "<hr>";
-    }
 }
- ?>
+?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -229,34 +181,42 @@ if (isset($_POST['crawl'])) {
             background-color: #f0f4f8;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+
         .container {
             margin-top: 50px;
             max-width: 600px;
         }
+
         .header {
             text-align: center;
             margin-bottom: 30px;
         }
+
         .header h1 {
             color: #007bff;
             font-size: 2.5rem;
         }
+
         .header p {
             color: #6c757d;
             font-size: 1.2rem;
         }
+
         .form-label {
             font-weight: bold;
             color: #343a40;
         }
+
         .btn-primary {
             background-color: #007bff;
             border: none;
             transition: background-color 0.3s;
         }
+
         .btn-primary:hover {
             background-color: #0056b3;
         }
+
         .result {
             margin-top: 30px;
             padding: 20px;
@@ -264,17 +224,20 @@ if (isset($_POST['crawl'])) {
             border-radius: 5px;
             background-color: #e9f7ff;
         }
+
         .similarity {
             font-weight: bold;
             color: #28a745;
         }
+
         .footer {
             text-align: center;
-            margin-top: 20px;
+            padding-top: 20px;
             color: #6c757d;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -333,10 +296,15 @@ if (isset($_POST['crawl'])) {
     </div>
 
     <div class="footer">
-        <p>&copy; 2025 KEPO.COM. All rights reserved.</p>
+        <p>Kelompok 2</p>
+        <p>160421048 - Satya Aryaputra Wigiyanto</p>
+        <p>160421050 - Archie Euaggelion Oematan</p>
+        <p>160421078 - Vinsent Farrel Eka Setyawan</p>
+        <p>160421125 - Timothy Dewanto Suwarno</p>
+        <p>160421144 - Theodorus Riady Hoesin</p>
     </div>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

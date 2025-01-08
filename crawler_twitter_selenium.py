@@ -8,25 +8,20 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 
-# Inisialisasi WebDriver (menggunakan ChromeDriver)
 from webdriver_manager.chrome import ChromeDriverManager
 
 service = Service(ChromeDriverManager().install())
 driver = webdriver.Chrome(service=service)
 
-# URL Instagram
 url = "https://x.com/login"
 
-# Akun Instagram (ganti dengan akun Anda)
 username = "ar_chie__"
 password = "S4P1kud4"
 
 def login_to_twitter(driver, username, password):
-    # Buka halaman login
     driver.get(url)
     time.sleep(15)
 
-    # Masukkan username dan password
     username_input = driver.find_element(By.NAME, "text")
 
     username_input.send_keys(username)
@@ -40,42 +35,34 @@ def login_to_twitter(driver, username, password):
     next = driver.find_element(By.CSS_SELECTOR, "span.css-1jxf684.r-bcqeeo.r-1ttztb7.r-qvutc0.r-poiln3")
     next.click()
     
-    # Submit login form
-    time.sleep(10)
+    time.sleep(5)
 
-    # Handle "Save Your Login Info" pop-up
 
 
 def scroll_and_collect_captions(driver, scroll_count=5):
-    captions = set()  # Gunakan set untuk menghindari duplikasi
+    captions = set()
 
     for _ in range(scroll_count):
-        # Ambil elemen posting (Caption)
         posts = driver.find_elements(By.CSS_SELECTOR, "span._ap3a._aaco._aacu._aacx._aad7._aade")
 
         for post in posts:
             try:
-                # Ambil teks caption
                 caption = post.text
-                captions.add(caption)  # Tambahkan caption ke dalam set
+                captions.add(caption)
             except Exception as e:
                 print(f"Error fetching caption: {e}")
 
-        # Scroll ke bawah menggunakan JavaScript
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        time.sleep(5)  # Tunggu untuk memuat konten tambahan
+        time.sleep(5) 
 
-    return list(captions)  # Kembalikan sebagai list
+    return list(captions)
 
 def main():
     try:
-        # Login ke Instagram
         login_to_twitter(driver, username, password)
 
-        # Scroll dan ambil caption dari home feed
         captions = scroll_and_collect_captions(driver, scroll_count=5)
 
-        # Tampilkan caption yang ditemukan
         for i, caption in enumerate(captions, start=1):
             print(f"{i}: {caption}")
     except Exception as e:

@@ -86,8 +86,28 @@ if (isset($_POST['crawl'])) {
             //     $i++;
             // }
         } elseif ($src == 'IG') {
-            $html = file_get_html('https://www.instagram.com/');
-            $i = 0;
+            $keyword = escapeshellarg($_POST['keyword']);
+            $maxResults = 10;
+            $pythonScript = 'crawler_instagram.py';
+
+            $command = escapeshellcmd("python $pythonScript $keyword $maxResults 2&>1");
+            $output = shell_exec($command);
+
+            $lines = explode("\n", htmlspecialchars($output));
+
+            foreach ($lines as $line) {
+                if (!empty(trim($line))) {
+                    $preprocessScript = 'preprocess.py';
+                    $preprocessCommand = escapeshellcmd("python $preprocessScript " . escapeshellarg(str_replace(" ", "@@", $line)));
+                    $preprocessedOutput = shell_exec("$preprocessCommand");
+
+                    // $sendText = str_replace(" ", "@@", $line);
+                    // $preprocessedOutput = shell_exec("python $preprocessScript $sendText");
+
+                    array_push($data_crawling, array('source' => 'Twitter', 'original' => $line, 'preprocessed' => $preprocessedOutput, 'similarity' => 0.0));
+                    array_push($sample_data, $preprocessedOutput);
+                }
+            }
         }
     }
 

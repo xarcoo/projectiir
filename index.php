@@ -87,7 +87,7 @@ if (isset($_POST['crawl'])) {
             // }
         } elseif ($src == 'IG') {
             $keyword = escapeshellarg($_POST['keyword']);
-            $pythonScript = 'crawler_ig_selenium.py';
+            $pythonScript = 'insta_crawler.py';
 
             $command = escapeshellcmd("python $pythonScript 2&>1");
             $output = shell_exec($command);
@@ -103,7 +103,7 @@ if (isset($_POST['crawl'])) {
                     // $sendText = str_replace(" ", "@@", $line);
                     // $preprocessedOutput = shell_exec("python $preprocessScript $sendText");
 
-                    array_push($data_crawling, array('source' => 'Twitter', 'original' => $line, 'preprocessed' => $preprocessedOutput, 'similarity' => 0.0));
+                    array_push($data_crawling, array('source' => 'Instagram', 'original' => $line, 'preprocessed' => $preprocessedOutput, 'similarity' => 0.0));
                     array_push($sample_data, $preprocessedOutput);
                 }
             }

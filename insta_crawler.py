@@ -63,7 +63,7 @@ def main():
         captions = scroll_and_collect_captions(driver, scroll_count=5)
 
         for i, caption in enumerate(captions, start=1):
-            print(f"{caption}")
+            print(f"{i}:{caption}")
     except Exception as e:
         print(f"An error occurred: {e}")
 if __name__ == "__main__":

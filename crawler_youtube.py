@@ -7,7 +7,7 @@ youtube_api_key = 'AIzaSyBydVNxq8ra5s47JqY3zikurqKxkayB9Bg'
 # Inisialisasi layanan YouTube API
 youtube = build('youtube', 'v3', developerKey=youtube_api_key)
 
-def search_videos(query, max_results=5):
+def search_videos(query, max_results=15):
     """Mencari video berdasarkan kata kunci."""
     response = youtube.search().list(
         q=query,

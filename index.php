@@ -20,9 +20,6 @@ echo '<input type="radio" name="method" value="Overlap"/>Overlap<br><br>';
 echo '<input type="submit" name="crawl" value="Search"> ';
 echo '</form>';
 
-$proxy = '';
-
-echo "<b><a href='index.php'>< Back to Home</a></b><br><br>";
 $i = 0;
 $data_crawling = array();
 $sample_data = array();
@@ -33,29 +30,25 @@ if (isset($_POST['crawl'])) {
             $keyword = escapeshellarg($_POST['keyword']);
             $maxResults = 10; // Batasi jumlah hasil YouTube jika tidak diatur
             $pythonScript = 'crawler_youtube.py';
-            
-            // Perintah untuk menjalankan Python
-            $command = escapeshellcmd("python $pythonScript $keyword $maxResults");
-            $output = shell_exec($command);
 
-            echo "<h2>Hasil dari Python (YouTube):</h2>";
-            echo "<div style='font-family: Arial, sans-serif; line-height: 1.6;'>";
+            // Perintah untuk menjalankan Python
+            $command = escapeshellcmd("python $pythonScript $keyword $maxResults 2&>1");
+            $output = shell_exec($command);
 
             $lines = explode("\n", htmlspecialchars($output));
             foreach ($lines as $line) {
                 if (!empty(trim($line))) {
-                    // Preprocessing menggunakan preprocess.py
+                    // // Preprocessing menggunakan preprocess.py
                     $preprocessScript = 'preprocess.py';
-                    $preprocessCommand = escapeshellcmd("python $preprocessScript " . escapeshellarg(str_replace(" ", "@@", $line)));
-                    $preprocessedOutput = shell_exec($preprocessCommand);
+                    // $preprocessCommand = escapeshellcmd("python $preprocessScript " . escapeshellarg(str_replace(" ", "@@", $line)));
+                    // $preprocessedOutput = shell_exec("$preprocessCommand");
 
-                    // Tampilkan hasil awal dan hasil preprocessing
-                    echo "<div style='margin-bottom: 10px;'><b>Original:</b> $line</div>";
-                    echo "<div style='margin-bottom: 10px;'><b>Preprocessed:</b> $preprocessedOutput</div>";
-                    array_push($data_crawling, array('source' => 'YouTube', 'original' => $line, 'preprocessed' => $preprocessedOutput));
+                    $sendText = str_replace(" ", "@@", $line);
+                    $preprocessedOutput = shell_exec("python $preprocessScript $sendText");
+
+                    array_push($data_crawling, array('source' => 'YouTube', 'original' => $line, 'preprocessed' => $preprocessedOutput, 'similarity' => 0.0));
                 }
             }
-            echo "</div>";
         } elseif ($src == 'X') {
             $html = file_get_html('https://x.com/');
             $i = 0;
@@ -135,9 +128,9 @@ if (isset($_POST['crawl'])) {
     $columns = array_column($data_crawling, 'similarity');
     array_multisort($columns, SORT_DESC, $data_crawling);
     foreach ($data_crawling as $row) {
-        echo "<b><u>Source:</u></b> " . $row[0] . "<br>";
-        echo "<b><u>Original Text:</u></b><br>" . $row[1] . "<br>";
-        echo "<b><u>Preprocessing Result:</u></b><br>" . $row[2] . "<br>";
+        echo "<b><u>Source:</u></b> " . $row['source'] . "<br>";
+        echo "<b><u>Original Text:</u></b><br>" . $row['original'] . "<br>";
+        echo "<b><u>Preprocessing Result:</u></b><br>" . $row['preprocessed'] . "<br>";
         echo "<b><u>Similarity:</u></b> " . $row["similarity"];
         echo "<hr>";
     }

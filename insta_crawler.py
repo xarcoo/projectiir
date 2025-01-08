@@ -4,13 +4,14 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import io
 import time
-
+import sys
 from webdriver_manager.chrome import ChromeDriverManager
 
 service = Service(ChromeDriverManager().install())
 driver = webdriver.Chrome(service=service)
-
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 url = "https://www.instagram.com"
 
 username = "untuk_iir"

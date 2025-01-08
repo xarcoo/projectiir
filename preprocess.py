@@ -34,7 +34,9 @@ sendKeyword = re.sub(r'https?://\S+|www\.\S+', '', sendKeyword)
 
 # 5. Remove special characters except hashtags
 sendKeyword = re.sub(r'[^a-z0-9\s#]', '', sendKeyword)
-    
+# 6. Hapus Karakter yang Tidak Didukung
+sendKeyword = re.sub(r'[^\x00-\x7F]+', '', sendKeyword)
+
 stem_Keyword = stemmer.stem(sendKeyword)
 stop_Keyword = stopper.remove(stem_Keyword)
 

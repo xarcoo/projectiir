@@ -8,19 +8,19 @@ use Phpml\FeatureExtraction\TokenCountVectorizer;
 use Phpml\Tokenization\WhitespaceTokenizer;
 use Phpml\FeatureExtraction\TfIdfTransformer;
 
-echo "PROJECT IIR <br>";
-echo "KEPO.COM";
-echo '<form action="index.php" method="POST">';
-echo '<b>Keyword :</b> <input type="text" name="keyword"><br><br>';
-echo '<b>Source :</b> ';
-echo '<input type="checkbox" name="source[]" value="X" checked/>X ';
-echo '<input type="checkbox" name="source[]" value="IG"/>Instagram';
-echo '<input type="checkbox" name="source[]" value="YT"/>Youtube<br>';
-echo '<b>Similarity Method :</b> ';
-echo '<input type="radio" name="method" value="Asymetric" checked/>Asymetric ';
-echo '<input type="radio" name="method" value="Overlap"/>Overlap<br><br>';
-echo '<input type="submit" name="crawl" value="Search"> ';
-echo '</form>';
+// echo "PROJECT IIR <br>";
+// echo "KEPO.COM";
+// echo '<form action="index.php" method="POST">';
+// echo '<b>Keyword :</b> <input type="text" name="keyword"><br><br>';
+// echo '<b>Source :</b> ';
+// echo '<input type="checkbox" name="source[]" value="X" checked/>X ';
+// echo '<input type="checkbox" name="source[]" value="IG"/>Instagram';
+// echo '<input type="checkbox" name="source[]" value="YT"/>Youtube<br>';
+// echo '<b>Similarity Method :</b> ';
+// echo '<input type="radio" name="method" value="Asymetric" checked/>Asymetric ';
+// echo '<input type="radio" name="method" value="Overlap"/>Overlap<br><br>';
+// echo '<input type="submit" name="crawl" value="Search"> ';
+// echo '</form>';
 
 $i = 0;
 $data_crawling = array();
@@ -215,3 +215,128 @@ if (isset($_POST['crawl'])) {
         echo "<hr>";
     }
 }
+ ?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project IIR - Search</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f0f4f8;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .container {
+            margin-top: 50px;
+            max-width: 600px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #007bff;
+            font-size: 2.5rem;
+        }
+        .header p {
+            color: #6c757d;
+            font-size: 1.2rem;
+        }
+        .form-label {
+            font-weight: bold;
+            color: #343a40;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+            transition: background-color 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #007bff;
+            border-radius: 5px;
+            background-color: #e9f7ff;
+        }
+        .similarity {
+            font-weight: bold;
+            color: #28a745;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>PROJECT IIR</h1>
+            <p class="text-muted">KEPO.COM</p>
+        </div>
+
+        <form action="index.php" method="POST" class="p-4 border rounded bg-white shadow">
+            <div class="mb-3">
+                <label for="keyword" class="form-label">Keyword</label>
+                <input type="text" class="form-control" id="keyword" name="keyword" placeholder="Enter your keyword" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Source</label><br>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="source[]" id="sourceX" value="X" checked>
+                    <label class="form-check-label" for="sourceX">X</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="source[]" id="sourceIG" value="IG">
+                    <label class="form-check-label" for="sourceIG">Instagram</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="source[]" id="sourceYT" value="YT">
+                    <label class="form-check-label" for="sourceYT">YouTube</label>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Similarity Method</label><br>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="method" id="methodAsym" value="Asymetric" checked>
+                    <label class="form-check-label" for="methodAsym">Asymmetric</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="method" id="methodOverlap" value="Overlap">
+                    <label class="form-check-label" for="methodOverlap">Overlap</label>
+                </div>
+            </div>
+
+            <button type="submit" name="crawl" class="btn btn-primary w-100">Search</button>
+        </form>
+
+        <?php
+        $columns = array_column($data_crawling, 'similarity');
+        array_multisort($columns, SORT_DESC, $data_crawling);
+        foreach ($data_crawling as $row) {
+            echo "<b><u>Source:</u></b> " . $row['source'] . "<br>";
+            echo "<b><u>Original Text:</u></b><br>" . $row['original'] . "<br>";
+            echo "<b><u>Preprocessing Result:</u></b><br>" . $row['preprocessed'] . "<br>";
+            echo "<b><u>Similarity:</u></b> " . round($row["similarity"], 5);
+            echo "<hr>";
+        }
+        ?>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2025 KEPO.COM. All rights reserved.</p>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

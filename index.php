@@ -26,9 +26,9 @@ $i = 0;
 $data_crawling = array();
 $sample_data = array();
 
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$results_per_page = 5; // Jumlah hasil per halaman
-$offset = ($page - 1) * $results_per_page;
+// $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+// $results_per_page = 5; // Jumlah hasil per halaman
+// $offset = ($page - 1) * $results_per_page;
 
 if (isset($_POST['crawl'])) {
     foreach ($_POST['source'] as $src) {
@@ -165,53 +165,53 @@ if (isset($_POST['crawl'])) {
             // echo "D" . ($i + 1) . " dan Q = " . round($result, 2) . "<br>";
             $data_crawling[$i]['similarity'] = $result;
         }
-        $_SESSION['data_crawling'] = $data_crawling;
+        // $_SESSION['data_crawling'] = $data_crawling;
     }
-    if (isset($_SESSION['data_crawling'])) {
-        $data_crawling = $_SESSION['data_crawling'];
-        $total_results = count($data_crawling);
-        $paged_results = array_slice($data_crawling, $offset, $results_per_page); // Ambil hasil untuk halaman ini
+    // if (isset($_SESSION['data_crawling'])) {
+    //     $data_crawling = $_SESSION['data_crawling'];
+    //     $total_results = count($data_crawling);
+    //     $paged_results = array_slice($data_crawling, $offset, $results_per_page); // Ambil hasil untuk halaman ini
     
-        // Tampilkan hasil paging
-        if (!empty($paged_results)) {
-            foreach ($paged_results as $row) {
-                echo "<b><u>Source:</u></b> " . $row['source'] . "<br>";
-                echo "<b><u>Original Text:</u></b><br>" . $row['original'] . "<br>";
-                echo "<b><u>Preprocessing Result:</u></b><br>" . $row['preprocessed'] . "<br>";
-                echo "<b><u>Similarity:</u></b> " . round($row["similarity"], 5);
-                echo "<hr>";
-            }
-        } else {
-            echo "No results to display.";
-        }
+    //     // Tampilkan hasil paging
+    //     if (!empty($paged_results)) {
+    //         foreach ($paged_results as $row) {
+    //             echo "<b><u>Source:</u></b> " . $row['source'] . "<br>";
+    //             echo "<b><u>Original Text:</u></b><br>" . $row['original'] . "<br>";
+    //             echo "<b><u>Preprocessing Result:</u></b><br>" . $row['preprocessed'] . "<br>";
+    //             echo "<b><u>Similarity:</u></b> " . round($row["similarity"], 5);
+    //             echo "<hr>";
+    //         }
+    //     } else {
+    //         echo "No results to display.";
+    //     }
     
-        // Tampilkan navigasi paging
-        $total_pages = ceil($total_results / $results_per_page);
+    //     // Tampilkan navigasi paging
+    //     $total_pages = ceil($total_results / $results_per_page);
     
-        echo '<div style="text-align:center;">';
-        if ($page > 1) {
-            echo '<a href="?page=' . ($page - 1) . '">Previous</a> ';
-        }
-        for ($i = 1; $i <= $total_pages; $i++) {
-            if ($i == $page) {
-                echo '<strong>' . $i . '</strong> ';
-            } else {
-                echo '<a href="?page=' . $i . '">' . $i . '</a> ';
-            }
-        }
-        if ($page < $total_pages) {
-            echo '<a href="?page=' . ($page + 1) . '">Next</a>';
-        }
-        echo '</div>';
-    }
-
-    // $columns = array_column($data_crawling, 'similarity');
-    // array_multisort($columns, SORT_DESC, $data_crawling);
-    // foreach ($data_crawling as $row) {
-    //     echo "<b><u>Source:</u></b> " . $row['source'] . "<br>";
-    //     echo "<b><u>Original Text:</u></b><br>" . $row['original'] . "<br>";
-    //     echo "<b><u>Preprocessing Result:</u></b><br>" . $row['preprocessed'] . "<br>";
-    //     echo "<b><u>Similarity:</u></b> " . round($row["similarity"], 5);
-    //     echo "<hr>";
+    //     echo '<div style="text-align:center;">';
+    //     if ($page > 1) {
+    //         echo '<a href="?page=' . ($page - 1) . '">Previous</a> ';
+    //     }
+    //     for ($i = 1; $i <= $total_pages; $i++) {
+    //         if ($i == $page) {
+    //             echo '<strong>' . $i . '</strong> ';
+    //         } else {
+    //             echo '<a href="?page=' . $i . '">' . $i . '</a> ';
+    //         }
+    //     }
+    //     if ($page < $total_pages) {
+    //         echo '<a href="?page=' . ($page + 1) . '">Next</a>';
+    //     }
+    //     echo '</div>';
     // }
+
+    $columns = array_column($data_crawling, 'similarity');
+    array_multisort($columns, SORT_DESC, $data_crawling);
+    foreach ($data_crawling as $row) {
+        echo "<b><u>Source:</u></b> " . $row['source'] . "<br>";
+        echo "<b><u>Original Text:</u></b><br>" . $row['original'] . "<br>";
+        echo "<b><u>Preprocessing Result:</u></b><br>" . $row['preprocessed'] . "<br>";
+        echo "<b><u>Similarity:</u></b> " . round($row["similarity"], 5);
+        echo "<hr>";
+    }
 }

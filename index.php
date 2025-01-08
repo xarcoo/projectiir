@@ -28,23 +28,21 @@ if (isset($_POST['crawl'])) {
     foreach ($_POST['source'] as $src) {
         if ($src == 'YT') {
             $keyword = escapeshellarg($_POST['keyword']);
-            $maxResults = 10; // Batasi jumlah hasil YouTube jika tidak diatur
+            $maxResults = 10;
             $pythonScript = 'crawler_youtube.py';
 
-            // Perintah untuk menjalankan Python
             $command = escapeshellcmd("python $pythonScript $keyword $maxResults 2&>1");
             $output = shell_exec($command);
 
             $lines = explode("\n", htmlspecialchars($output));
             foreach ($lines as $line) {
                 if (!empty(trim($line))) {
-                    // // Preprocessing menggunakan preprocess.py
                     $preprocessScript = 'preprocess.py';
-                    // $preprocessCommand = escapeshellcmd("python $preprocessScript " . escapeshellarg(str_replace(" ", "@@", $line)));
-                    // $preprocessedOutput = shell_exec("$preprocessCommand");
+                    $preprocessCommand = escapeshellcmd("python $preprocessScript " . escapeshellarg(str_replace(" ", "@@", $line)));
+                    $preprocessedOutput = shell_exec("$preprocessCommand");
 
-                    $sendText = str_replace(" ", "@@", $line);
-                    $preprocessedOutput = shell_exec("python $preprocessScript $sendText");
+                    // $sendText = str_replace(" ", "@@", $line);
+                    // $preprocessedOutput = shell_exec("python $preprocessScript $sendText");
 
                     array_push($data_crawling, array('source' => 'YouTube', 'original' => $line, 'preprocessed' => $preprocessedOutput, 'similarity' => 0.0));
                 }
@@ -67,8 +65,6 @@ if (isset($_POST['crawl'])) {
         } elseif ($src == 'IG') {
             $html = file_get_html('https://www.instagram.com/');
             $i = 0;
-            $html = new simple_html_dom();
-            $html->load($result['message']);
         }
     }
 

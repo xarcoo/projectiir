@@ -36,7 +36,7 @@ if (isset($_POST['crawl'])) {
 			$i = 0;
 			$html = new simple_html_dom();
 			$html->load($result['message']);
-			foreach ($html->find('div[class="css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3"]') as $posts) {
+			foreach ($html->find('article[class="css-175oi2r r-18u37iz r-1udh08x r-1c4vpko r-1c7gwzm r-o7ynqc r-6416eg r-1ny4l3l r-1loqt21"]') as $posts) {
 				if ($i > 9) break;
 				else {
 					$text = $posts->find('span[clas="css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3"]', 0)->innertext;

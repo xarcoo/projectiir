@@ -49,20 +49,42 @@ if (isset($_POST['crawl'])) {
                 }
             }
         } elseif ($src == 'X') {
-            $html = file_get_html('https://x.com/');
-            $i = 0;
-            foreach ($html->find('div[class="css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3"]') as $posts) {
-                if ($i > 9) break;
-                else {
-                    $text = $posts->find('span[clas="css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3"]', 0)->innertext;
-                    $sendText = str_replace(" ", "##", $text);
-                    $stopText = shell_exec("python preprocess.py $sendText");
+            $keyword = escapeshellarg($_POST['keyword']);
+            $maxResults = 10;
+            $pythonScript = 'crawler_twitter.py';
 
-                    array_push($data_crawling, array($src, $text, $stopText, 'similarity' => 0.0));
-                    array_push($sample_data, $stopText);
+            $command = escapeshellcmd("python $pythonScript $keyword $maxResults 2&>1");
+            $output = shell_exec($command);
+
+            $lines = explode("\n", htmlspecialchars($output));
+
+            foreach ($lines as $line) {
+                if (!empty(trim($line))) {
+                    $preprocessScript = 'preprocess.py';
+                    $preprocessCommand = escapeshellcmd("python $preprocessScript " . escapeshellarg(str_replace(" ", "@@", $line)));
+                    $preprocessedOutput = shell_exec("$preprocessCommand");
+
+                    // $sendText = str_replace(" ", "@@", $line);
+                    // $preprocessedOutput = shell_exec("python $preprocessScript $sendText");
+
+                    array_push($data_crawling, array('source' => 'Twitter', 'original' => $line, 'preprocessed' => $preprocessedOutput, 'similarity' => 0.0));
+                    array_push($sample_data, $preprocessedOutput);
                 }
-                $i++;
             }
+            // $html = file_get_html('https://x.com/');
+            // $i = 0;
+            // foreach ($html->find('div[class="css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3"]') as $posts) {
+            //     if ($i > 9) break;
+            //     else {
+            //         $text = $posts->find('span[clas="css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3"]', 0)->innertext;
+            //         $sendText = str_replace(" ", "##", $text);
+            //         $stopText = shell_exec("python preprocess.py $sendText");
+
+            //         array_push($data_crawling, array($src, $text, $stopText, 'similarity' => 0.0));
+            //         array_push($sample_data, $stopText);
+            //     }
+            //     $i++;
+            // }
         } elseif ($src == 'IG') {
             $html = file_get_html('https://www.instagram.com/');
             $i = 0;

@@ -30,22 +30,32 @@ $sample_data = array();
 if (isset($_POST['crawl'])) {
     foreach ($_POST['source'] as $src) {
         if ($src == 'YT') {
-            $html = file_get_html('https://www.youtube.com/');
-            $i = 0;
-            $html = new simple_html_dom();
-            $html->load($result['message']);
-            foreach ($html->find('div[class="style-scope ytd-rich-item-renderer"]') as $posts) {
-                if ($i > 9) break;
-                else {
-                    $text = $posts->find('a[clas="yt-simple-endpoint style-scope ytd-playlist-thumbnail"]', 0)->href;
-                    $sendText = str_replace(" ", "@@", $text);
-                    $stopText = shell_exec("python preprocess.py $sendText");
+            $keyword = escapeshellarg($_POST['keyword']);
+            $maxResults = 10; // Batasi jumlah hasil YouTube jika tidak diatur
+            $pythonScript = 'crawler_youtube.py';
+            
+            // Perintah untuk menjalankan Python
+            $command = escapeshellcmd("python $pythonScript $keyword $maxResults");
+            $output = shell_exec($command);
 
-                    array_push($data_crawling, array($src, $text, $stopText, 'similarity' => 0.0));
-                    array_push($sample_data, $stopText);
+            echo "<h2>Hasil dari Python (YouTube):</h2>";
+            echo "<div style='font-family: Arial, sans-serif; line-height: 1.6;'>";
+
+            $lines = explode("\n", htmlspecialchars($output));
+            foreach ($lines as $line) {
+                if (!empty(trim($line))) {
+                    // Preprocessing menggunakan preprocess.py
+                    $preprocessScript = 'preprocess.py';
+                    $preprocessCommand = escapeshellcmd("python $preprocessScript " . escapeshellarg(str_replace(" ", "@@", $line)));
+                    $preprocessedOutput = shell_exec($preprocessCommand);
+
+                    // Tampilkan hasil awal dan hasil preprocessing
+                    echo "<div style='margin-bottom: 10px;'><b>Original:</b> $line</div>";
+                    echo "<div style='margin-bottom: 10px;'><b>Preprocessed:</b> $preprocessedOutput</div>";
+                    array_push($data_crawling, array('source' => 'YouTube', 'original' => $line, 'preprocessed' => $preprocessedOutput));
                 }
-                $i++;
             }
+            echo "</div>";
         } elseif ($src == 'X') {
             $html = file_get_html('https://x.com/');
             $i = 0;

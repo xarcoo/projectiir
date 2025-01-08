@@ -87,10 +87,9 @@ if (isset($_POST['crawl'])) {
             // }
         } elseif ($src == 'IG') {
             $keyword = escapeshellarg($_POST['keyword']);
-            $maxResults = 10;
-            $pythonScript = 'crawler_instagram.py';
+            $pythonScript = 'crawler_ig_selenium.py';
 
-            $command = escapeshellcmd("python $pythonScript $keyword $maxResults 2&>1");
+            $command = escapeshellcmd("python $pythonScript 2&>1");
             $output = shell_exec($command);
 
             $lines = explode("\n", htmlspecialchars($output));

@@ -1,4 +1,3 @@
-
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
@@ -79,7 +78,7 @@ def main():
 
         # Tampilkan caption yang ditemukan
         for i, caption in enumerate(captions, start=1):
-            print(f"{i}: {caption}")
+            print(f"{caption}")
     except Exception as e:
         print(f"An error occurred: {e}")
 if __name__ == "__main__":

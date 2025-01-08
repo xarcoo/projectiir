@@ -6,7 +6,6 @@ use Phpml\FeatureExtraction\TokenCountVectorizer;
 use Phpml\Tokenization\WhitespaceTokenizer;
 use Phpml\FeatureExtraction\TfIdfTransformer;
 
-#Bingung coy gimana cara gabungin semua prosesnya, dari crawling->preprocessing->TF-IDF->Similarity
 echo "<b><a href='index.php'>< Back to Home</a></b><br><br>";
 $i = 0;
 $data_crawling = array();
@@ -17,8 +16,6 @@ if (isset($_POST['crawl'])) {
 		if ($src == 'YT') {
 			$html = file_get_html('https://www.youtube.com/');
 			$i = 0;
-			$html = new simple_html_dom();
-			$html->load($result['message']);
 			foreach ($html->find('div[class="style-scope ytd-rich-item-renderer"]') as $posts) {
 				if ($i > 9) break;
 				else {
@@ -34,13 +31,11 @@ if (isset($_POST['crawl'])) {
 		} elseif ($src == 'X') {
 			$html = file_get_html('https://x.com/');
 			$i = 0;
-			$html = new simple_html_dom();
-			$html->load($result['message']);
 			foreach ($html->find('article[class="css-175oi2r r-18u37iz r-1udh08x r-1c4vpko r-1c7gwzm r-o7ynqc r-6416eg r-1ny4l3l r-1loqt21"]') as $posts) {
 				if ($i > 9) break;
 				else {
 					$text = $posts->find('span[clas="css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3"]', 0)->innertext;
-					$sendText = str_replace(" ", "##", $text);
+					$sendText = str_replace(" ", "@@", $text);
 					$stopText = shell_exec("python preprocess.py $sendText");
 
 					array_push($data_crawling, array($src, $text, $stopText, 'similarity' => 0.0));
@@ -51,8 +46,6 @@ if (isset($_POST['crawl'])) {
 		} elseif ($src == 'IG') {
 			$html = file_get_html('https://www.instagram.com/');
 			$i = 0;
-			$html = new simple_html_dom();
-			$html->load($result['message']);
 		}
 	}
 
@@ -82,7 +75,6 @@ if (isset($_POST['crawl'])) {
 				$result = 0;
 			}
 
-			// echo "D" . ($i + 1) . " dan Q = " . round($result, 2) . "<br>";
 			$data_crawling[$i]['similarity'] = $result;
 		}
 	} else {
@@ -102,7 +94,6 @@ if (isset($_POST['crawl'])) {
 				$result = 0;
 			}
 
-			// echo "D" . ($i + 1) . " dan Q = " . round($result, 2) . "<br>";
 			$data_crawling[$i]['similarity'] = $result;
 		}
 	}

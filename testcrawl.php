@@ -13,16 +13,15 @@ $i = 0;
 //     $i++;
 // }
 
-$html = file_get_html('https://x.com/home/');
-foreach ($html->find('div[class="r-18u37iz"]') as $posts) {
-    echo "test";
-    if ($i > 9) break;
-    else {
-        $text = $posts->find('span[clas="css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3"]', 0)->innertext;
-        echo "$text <br>";
-    }
-    $i++;
-}
+// $html = file_get_html('https://x.com/home/');
+// foreach ($html->find('div[class="r-18u37iz"]') as $posts) {
+//     if ($i > 9) break;
+//     else {
+//         $text = $posts->find('span[clas="css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3"]', 0)->innertext;
+//         echo "$text <br>";
+//     }
+//     $i++;
+// }
 
 // $html = file_get_html('https://www.instagram.com/');
 
@@ -36,3 +35,6 @@ foreach ($html->find('div[class="r-18u37iz"]') as $posts) {
 //     }
 //     $i++;
 // }
+
+echo "<b><u>Test: </u></b>";
+echo "<hr>";

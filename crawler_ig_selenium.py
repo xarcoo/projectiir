@@ -1,13 +1,15 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from webdriver_manager.chrome import ChromeDriverManager
 import time
 
 USERNAME = 'comfydent.clothing'
 PASSWORD = 'comfyajarek'
+
+unique_posts = set()
 
 # Chrome options (optional)
 chrome_options = Options()
@@ -57,7 +59,10 @@ else:
 
     posts = driver.find_elements(By.CSS_SELECTOR, "span._ap3a._aaco._aacu._aacx._aad7._aade")
     for post in posts:
-        print(post.text)
+        text = post.text
+        if text not in unique_posts:
+            unique_posts.add(text)
+            print(text)
 
 # Quit the driver
 driver.quit()

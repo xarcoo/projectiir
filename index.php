@@ -39,12 +39,13 @@ if (isset($_POST['crawl'])) {
                 if (!empty(trim($line))) {
                     $preprocessScript = 'preprocess.py';
                     $preprocessCommand = escapeshellcmd("python $preprocessScript " . escapeshellarg(str_replace(" ", "@@", $line)));
-                    $preprocessedOutput = shell_exec("$preprocessCommand");
+                    $preprocessedOutput = shell_exec("$preprocessCommand 2&>!");
 
                     // $sendText = str_replace(" ", "@@", $line);
                     // $preprocessedOutput = shell_exec("python $preprocessScript $sendText");
 
                     array_push($data_crawling, array('source' => 'YouTube', 'original' => $line, 'preprocessed' => $preprocessedOutput, 'similarity' => 0.0));
+                    array_push($sample_data, $preprocessedOutput);
                 }
             }
         } elseif ($src == 'X') {

@@ -52,8 +52,6 @@ if (isset($_POST['crawl'])) {
         } elseif ($src == 'X') {
             $html = file_get_html('https://x.com/');
             $i = 0;
-            $html = new simple_html_dom();
-            $html->load($result['message']);
             foreach ($html->find('div[class="css-1jxf684 r-bcqeeo r-1ttztb7 r-qvutc0 r-poiln3"]') as $posts) {
                 if ($i > 9) break;
                 else {

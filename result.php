@@ -25,7 +25,7 @@ if (isset($_POST['crawl'])) {
 				if ($i > 9) break;
 				else {
 					$text = $posts->find('a[clas="yt-simple-endpoint style-scope ytd-playlist-thumbnail"]', 0)->href;
-					$sendText = str_replace(" ", "##", $text);
+					$sendText = str_replace(" ", "@@", $text);
 					$stopText = shell_exec("python preprocess.py $sendText");
 
 					array_push($data_crawling, array($src, $text, $stopText, 'similarity' => 0.0));

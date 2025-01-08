@@ -39,7 +39,7 @@ if (isset($_POST['crawl'])) {
                 if (!empty(trim($line))) {
                     $preprocessScript = 'preprocess.py';
                     $preprocessCommand = escapeshellcmd("python $preprocessScript " . escapeshellarg(str_replace(" ", "@@", $line)));
-                    $preprocessedOutput = shell_exec("$preprocessCommand 2&>!");
+                    $preprocessedOutput = shell_exec("$preprocessCommand");
 
                     // $sendText = str_replace(" ", "@@", $line);
                     // $preprocessedOutput = shell_exec("python $preprocessScript $sendText");
@@ -126,7 +126,7 @@ if (isset($_POST['crawl'])) {
         echo "<b><u>Source:</u></b> " . $row['source'] . "<br>";
         echo "<b><u>Original Text:</u></b><br>" . $row['original'] . "<br>";
         echo "<b><u>Preprocessing Result:</u></b><br>" . $row['preprocessed'] . "<br>";
-        echo "<b><u>Similarity:</u></b> " . $row["similarity"];
+        echo "<b><u>Similarity:</u></b> " . round($row["similarity"], 5);
         echo "<hr>";
     }
 }

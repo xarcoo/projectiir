@@ -67,13 +67,28 @@ if (isset($_POST['crawl'])) {
             $lines = explode("\n", htmlspecialchars($output));
 
             foreach ($lines as $line) {
-                if (!empty(trim($line))) {
-                    $preprocessScript = 'preprocess.py';
-                    $preprocessCommand = escapeshellcmd("python $preprocessScript " . escapeshellarg(str_replace(" ", "@@", $line)));
-                    $preprocessedOutput = shell_exec("$preprocessCommand");
+                if (isset($dupe)) {
+                    if ($line == $dupe) {
+                        $dupe = $line;
+                    } else {
+                        if (!empty(trim($line))) {
+                            $preprocessScript = 'preprocess.py';
+                            $preprocessCommand = escapeshellcmd("python $preprocessScript " . escapeshellarg(str_replace(" ", "@@", $line)));
+                            $preprocessedOutput = shell_exec("$preprocessCommand");
 
-                    array_push($data_crawling, array('source' => 'Instagram', 'original' => $line, 'preprocessed' => $preprocessedOutput, 'similarity' => 0.0));
-                    array_push($sample_data, $preprocessedOutput);
+                            array_push($data_crawling, array('source' => 'Instagram', 'original' => $line, 'preprocessed' => $preprocessedOutput, 'similarity' => 0.0));
+                            array_push($sample_data, $preprocessedOutput);
+                        }
+                    }
+                } else {
+                    if (!empty(trim($line))) {
+                        $preprocessScript = 'preprocess.py';
+                        $preprocessCommand = escapeshellcmd("python $preprocessScript " . escapeshellarg(str_replace(" ", "@@", $line)));
+                        $preprocessedOutput = shell_exec("$preprocessCommand");
+
+                        array_push($data_crawling, array('source' => 'Instagram', 'original' => $line, 'preprocessed' => $preprocessedOutput, 'similarity' => 0.0));
+                        array_push($sample_data, $preprocessedOutput);
+                    }
                 }
             }
         }

@@ -199,7 +199,7 @@ if (isset($_POST['crawl'])) {
 
         .container {
             margin-top: 50px;
-            max-width: 600px;
+            max-width: 1000px;
         }
 
         .header {
@@ -222,6 +222,22 @@ if (isset($_POST['crawl'])) {
             color: #343a40;
         }
 
+        .center-placeholder {
+            text-align: center;
+        }
+
+        .center-placeholder::placeholder {
+            text-align: center;
+        }
+
+        .aligntextcenter {
+            text-align: center;
+        }
+
+        .method {
+            justify-items: center;
+        }
+
         .btn-primary {
             background-color: #007bff;
             border: none;
@@ -238,6 +254,10 @@ if (isset($_POST['crawl'])) {
             border: 1px solid #007bff;
             border-radius: 5px;
             background-color: #e9f7ff;
+        }
+
+        .result p {
+            text-align: center;
         }
 
         .similarity {
@@ -261,15 +281,15 @@ if (isset($_POST['crawl'])) {
         </div>
 
         <form action="index.php" method="POST" class="p-4 border rounded bg-white shadow">
-            <div class="mb-3">
+            <div class="mb-3 aligntextcenter">
                 <label for="keyword" class="form-label">Keyword</label>
-                <input type="text" class="form-control" id="keyword" name="keyword" placeholder="Enter your keyword" required>
+                <input type="text" class="form-control center-placeholder" id="keyword" name="keyword" placeholder="Enter your keyword" required>
             </div>
 
-            <div class="mb-3">
+            <div class="mb-3 aligntextcenter">
                 <label class="form-label">Source</label><br>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="checkbox" name="source[]" id="sourceX" value="X" checked>
+                    <input class="form-check-input" type="checkbox" name="source[]" id="sourceX" value="X">
                     <label class="form-check-label" for="sourceX">X</label>
                 </div>
                 <div class="form-check form-check-inline">
@@ -282,32 +302,42 @@ if (isset($_POST['crawl'])) {
                 </div>
             </div>
 
-            <div class="mb-3">
+            <div class="mb-3 method">
                 <label class="form-label">Similarity Method</label><br>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="method" id="methodAsym" value="Asymetric" checked>
-                    <label class="form-check-label" for="methodAsym">Asymmetric</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="method" id="methodOverlap" value="Overlap">
-                    <label class="form-check-label" for="methodOverlap">Overlap</label>
+                <div class="radio">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="method" id="methodAsym" value="Asymetric">
+                        <label class="form-check-label" for="methodAsym">Asymmetric</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="method" id="methodOverlap" value="Overlap">
+                        <label class="form-check-label" for="methodOverlap">Overlap</label>
+                    </div>
                 </div>
             </div>
 
             <button type="submit" name="crawl" class="btn btn-primary w-100">Search</button>
         </form>
 
-        <?php
-        $columns = array_column($data_crawling, 'similarity');
-        array_multisort($columns, SORT_DESC, $data_crawling);
-        foreach ($data_crawling as $row) {
-            echo "<b><u>Source:</u></b> " . $row['source'] . "<br>";
-            echo "<b><u>Original Text:</u></b><br>" . $row['original'] . "<br>";
-            echo "<b><u>Preprocessing Result:</u></b><br>" . $row['preprocessed'] . "<br>";
-            echo "<b><u>Similarity:</u></b> " . round($row["similarity"], 5);
+        <div class="result">
+            <?php
             echo "<hr>";
-        }
-        ?>
+            if (!empty($data_crawling)) {
+                $columns = array_column($data_crawling, 'similarity');
+                array_multisort($columns, SORT_DESC, $data_crawling);
+                foreach ($data_crawling as $row) {
+                    echo "<b><u>Source:</u></b> " . $row['source'] . "<br>";
+                    echo "<b><u>Original Text:</u></b><br>" . $row['original'] . "<br>";
+                    echo "<b><u>Preprocessing Result:</u></b><br>" . $row['preprocessed'] . "<br>";
+                    echo "<b><u>Similarity:</u></b> " . round($row["similarity"], 5);
+                    echo "<hr>";
+                }
+            } else {
+                echo '<p>No data found (Please search for a keyword)</p>';
+                echo "<hr>";
+            }
+            ?>
+        </div>
     </div>
 
     <div class="footer">

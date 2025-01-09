@@ -55,7 +55,7 @@ if (isset($_POST['crawl'])) {
             }
         } elseif ($src == 'IG') {
             $keyword = escapeshellarg($_POST['keyword']);
-            $pythonScript = 'insta_crawler.py';
+            $pythonScript = 'crawler_instagram.py';
 
             $command = escapeshellcmd("python $pythonScript 2>&1");
             $output = shell_exec($command);
@@ -75,7 +75,7 @@ if (isset($_POST['crawl'])) {
                     $preprocessScript = 'preprocess_ig.py';
 
                     $temp_file = tempnam(sys_get_temp_dir(), 'data_');
-                    file_put_contents($temp_file,  $line);
+                    file_put_contents($temp_file, $line);
 
                     $preprocessCommand = escapeshellcmd("python $preprocessScript " . escapeshellarg($temp_file));
                     $preprocessedOutput = shell_exec($preprocessCommand);

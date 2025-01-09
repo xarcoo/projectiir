@@ -10,12 +10,12 @@ driver = webdriver.Chrome()
 
 def login_twitter(username, password):
     driver.get("https://twitter.com/login")
-    time.sleep(3)
+    time.sleep(10)
 
     username_input = driver.find_element(By.NAME, "text")
     username_input.send_keys(username)
     username_input.send_keys(Keys.ENTER)
-    time.sleep(2)
+    time.sleep(3)
 
     password_input = driver.find_element(By.NAME, "password")
     password_input.send_keys(password)
@@ -51,8 +51,8 @@ if __name__ == '__main__':
         # print("Usage: python twitter_crawl.py <keyword> <max_results>")
         sys.exit(1)
 
-    twitter_username = "TestIir17386"
-    twitter_password = "testiir12"
+    twitter_username = "study79642"
+    twitter_password = "studyserver_2025"
 
     login_twitter(twitter_username, twitter_password)
 
@@ -60,10 +60,12 @@ if __name__ == '__main__':
     max_results = int(sys.argv[2])
 
     tweets = search_twitter(keyword, max_tweets=20)
-    print(json.dumps(tweets))
+    # print(tweets)
     if not tweets:
         sys.exit()
 
+    for i, tweet in enumerate(tweets, start=1):
+        print(f"{tweet}")
     # Output hasil pencarian
     # for index, tweet in enumerate(tweets, start=1):
     #     print(f"\nTweet {index}:")

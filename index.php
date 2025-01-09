@@ -25,7 +25,7 @@ if (isset($_POST['crawl'])) {
             $lines = explode("\n", htmlspecialchars($output));
             foreach ($lines as $line) {
                 if (!empty(trim($line))) {
-                    $preprocessScript = 'preprocessXYt.py';
+                    $preprocessScript = 'preprocess_x_yt.py';
                     $preprocessCommand = escapeshellcmd("python $preprocessScript " . escapeshellarg(str_replace(" ", "@@", $line)));
                     $preprocessedOutput = shell_exec("$preprocessCommand");
 
@@ -45,7 +45,7 @@ if (isset($_POST['crawl'])) {
 
             foreach ($lines as $line) {
                 if (!empty(trim($line))) {
-                    $preprocessScript = 'preprocessXYt.py';
+                    $preprocessScript = 'preprocess_x_yt.py';
                     $preprocessCommand = escapeshellcmd("python $preprocessScript " . escapeshellarg(str_replace(" ", "@@", $line)));
                     $preprocessedOutput = shell_exec("$preprocessCommand");
 
@@ -72,7 +72,7 @@ if (isset($_POST['crawl'])) {
                 $dupe = $line;
 
                 if (!empty(trim($line))) {
-                    $preprocessScript = 'preprocess.py';
+                    $preprocessScript = 'preprocess_ig.py';
 
                     $temp_file = tempnam(sys_get_temp_dir(), 'data_');
                     file_put_contents($temp_file,  $line);

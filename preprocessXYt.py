@@ -7,19 +7,8 @@ from Sastrawi.StopWordRemover.StopWordRemoverFactory import StopWordRemoverFacto
 stemmer = StemmerFactory().create_stemmer()
 stopper = StopWordRemoverFactory().create_stop_word_remover()
 
-if len(sys.argv) < 2:
-    print("No file provided.")
-    sys.exit(1)
-    
-file_path = sys.argv[1]
-try:
-    with open(file_path, 'r', encoding='utf-8') as file:
-        sendKeyword = file.read()
-except Exception as e:
-    print(f"Error reading file: {e}")
-    sys.exit(1)
-
 # Retrieve input text
+sendKeyword = sys.argv[1]
 sendKeyword = sendKeyword.split("@@")
 sendKeyword = list(filter(None, sendKeyword))
 sendKeyword = ' '.join(sendKeyword)

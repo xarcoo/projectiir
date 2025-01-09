@@ -29,7 +29,7 @@ if (isset($_POST['crawl'])) {
             $lines = explode("\n", htmlspecialchars($output));
             foreach ($lines as $line) {
                 if (!empty(trim($line))) {
-                    $preprocessScript = 'preprocess.py';
+                    $preprocessScript = 'preprocessXYt.py';
                     $preprocessCommand = escapeshellcmd("python $preprocessScript " . escapeshellarg(str_replace(" ", "@@", $line)));
                     $preprocessedOutput = shell_exec("$preprocessCommand");
 
@@ -49,7 +49,7 @@ if (isset($_POST['crawl'])) {
 
             foreach ($lines as $line) {
                 if (!empty(trim($line))) {
-                    $preprocessScript = 'preprocess.py';
+                    $preprocessScript = 'preprocessXYt.py';
                     $preprocessCommand = escapeshellcmd("python $preprocessScript " . escapeshellarg(str_replace(" ", "@@", $line)));
                     $preprocessedOutput = shell_exec("$preprocessCommand");
 
@@ -60,38 +60,83 @@ if (isset($_POST['crawl'])) {
         } elseif ($src == 'IG') {
             $keyword = escapeshellarg($_POST['keyword']);
             $pythonScript = 'insta_crawler.py';
-
-            $command = escapeshellcmd("python $pythonScript 2&>1");
+        
+            // Jalankan skrip Python untuk mengcrawl data Instagram
+            $command = escapeshellcmd("python $pythonScript 2>&1");
             $output = shell_exec($command);
-
+        
+            // Pisahkan output menjadi baris-baris
             $lines = explode("\n", htmlspecialchars($output));
-
+        
+            // Variabel untuk menghindari duplikasi
+            $dupe = null;
+        
             foreach ($lines as $line) {
-                if (isset($dupe)) {
-                    if ($line == $dupe) {
-                        $dupe = $line;
-                    } else {
-                        if (!empty(trim($line))) {
-                            $preprocessScript = 'preprocess.py';
-                            $preprocessCommand = escapeshellcmd("python $preprocessScript " . escapeshellarg(str_replace(" ", "@@", $line)));
-                            $preprocessedOutput = shell_exec("$preprocessCommand");
-
-                            array_push($data_crawling, array('source' => 'Instagram', 'original' => $line, 'preprocessed' => $preprocessedOutput, 'similarity' => 0.0));
-                            array_push($sample_data, $preprocessedOutput);
-                        }
-                    }
-                } else {
-                    if (!empty(trim($line))) {
-                        $preprocessScript = 'preprocess.py';
-                        $preprocessCommand = escapeshellcmd("python $preprocessScript " . escapeshellarg(str_replace(" ", "@@", $line)));
-                        $preprocessedOutput = shell_exec("$preprocessCommand");
-
-                        array_push($data_crawling, array('source' => 'Instagram', 'original' => $line, 'preprocessed' => $preprocessedOutput, 'similarity' => 0.0));
-                        array_push($sample_data, $preprocessedOutput);
-                    }
+                // Periksa apakah ini adalah duplikat dari sebelumnya
+                if ($line === $dupe) {
+                    continue; // Lewati baris jika duplikat
+                }
+        
+                // Set baris saat ini sebagai duplikat untuk iterasi berikutnya
+                $dupe = $line;
+        
+                // Proses hanya jika baris tidak kosong
+                if (!empty(trim($line))) {
+                    $preprocessScript = 'preprocess.py';
+        
+                    // Gunakan file sementara untuk menyimpan data besar
+                    $temp_file = tempnam(sys_get_temp_dir(), 'data_');
+                    file_put_contents($temp_file,  $line);
+        
+                    // Buat perintah Python dengan file sementara
+                    $preprocessCommand = escapeshellcmd("python $preprocessScript " . escapeshellarg($temp_file));
+                    $preprocessedOutput = shell_exec($preprocessCommand);
+        
+                    // Hapus file sementara setelah selesai
+                    unlink($temp_file);
+        
+                    // Tambahkan hasil ke array data_crawling
+                    array_push($data_crawling, array('source' => 'Instagram', 'original' => $line, 'preprocessed' => $preprocessedOutput, 'similarity' => 0.0));
+                    array_push($sample_data, $preprocessedOutput);
                 }
             }
         }
+        
+        // elseif ($src == 'IG') {
+        //     $keyword = escapeshellarg($_POST['keyword']);
+        //     $pythonScript = 'insta_crawler.py';
+
+        //     $command = escapeshellcmd("python $pythonScript 2&>1");
+        //     $output = shell_exec($command);
+
+        //     $lines = explode("\n", htmlspecialchars($output));
+
+        //     foreach ($lines as $line) {
+        //         if (isset($dupe)) {
+        //             if ($line == $dupe) {
+        //                 $dupe = $line;
+        //             } else {
+        //                 if (!empty(trim($line))) {
+        //                     $preprocessScript = 'preprocess.py';
+        //                     $preprocessCommand = escapeshellcmd("python $preprocessScript " . escapeshellarg(str_replace(" ", "@@", $line)));
+        //                     $preprocessedOutput = shell_exec("$preprocessCommand");
+
+        //                     array_push($data_crawling, array('source' => 'Instagram', 'original' => $line, 'preprocessed' => $preprocessedOutput, 'similarity' => 0.0));
+        //                     array_push($sample_data, $preprocessedOutput);
+        //                 }
+        //             }
+        //         } else {
+        //             if (!empty(trim($line))) {
+        //                 $preprocessScript = 'preprocess.py';
+        //                 $preprocessCommand = escapeshellcmd("python $preprocessScript " . escapeshellarg(str_replace(" ", "@@", $line)));
+        //                 $preprocessedOutput = shell_exec("$preprocessCommand");
+
+        //                 array_push($data_crawling, array('source' => 'Instagram', 'original' => $line, 'preprocessed' => $preprocessedOutput, 'similarity' => 0.0));
+        //                 array_push($sample_data, $preprocessedOutput);
+        //             }
+        //         }
+        //     }
+        // }
     }
 
     array_push($sample_data, $_POST['keyword']);

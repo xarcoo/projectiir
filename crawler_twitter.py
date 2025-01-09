@@ -48,7 +48,7 @@ def search_twitter(query, max_tweets=10):
 
 if __name__ == '__main__':
     if len(sys.argv) < 3:
-        # print("Usage: python twitter_crawl.py <keyword> <max_results>")
+        # print("python twitter_crawl.py <keyword> <max_results>")
         sys.exit(1)
 
     twitter_username = "study79642"
@@ -60,7 +60,7 @@ if __name__ == '__main__':
     max_results = int(sys.argv[2])
 
     tweets = search_twitter(keyword, max_tweets=20)
-    # print(tweets)
+    
     if not tweets:
         sys.exit()
 

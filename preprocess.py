@@ -3,7 +3,6 @@ import re
 from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 from Sastrawi.StopWordRemover.StopWordRemoverFactory import StopWordRemoverFactory
 
-# Initialize stemmer and stopword remover
 stemmer = StemmerFactory().create_stemmer()
 stopper = StopWordRemoverFactory().create_stop_word_remover()
 
@@ -19,7 +18,6 @@ except Exception as e:
     print(f"Error reading file: {e}")
     sys.exit(1)
 
-# Retrieve input text
 sendKeyword = sendKeyword.split("@@")
 sendKeyword = list(filter(None, sendKeyword))
 sendKeyword = ' '.join(sendKeyword)

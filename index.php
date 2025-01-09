@@ -12,10 +12,6 @@ $i = 0;
 $data_crawling = array();
 $sample_data = array();
 
-// $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-// $results_per_page = 5; // Jumlah hasil per halaman
-// $offset = ($page - 1) * $results_per_page;
-
 if (isset($_POST['crawl'])) {
     foreach ($_POST['source'] as $src) {
         if ($src == 'YT') {
@@ -60,83 +56,37 @@ if (isset($_POST['crawl'])) {
         } elseif ($src == 'IG') {
             $keyword = escapeshellarg($_POST['keyword']);
             $pythonScript = 'insta_crawler.py';
-        
-            // Jalankan skrip Python untuk mengcrawl data Instagram
+
             $command = escapeshellcmd("python $pythonScript 2>&1");
             $output = shell_exec($command);
-        
-            // Pisahkan output menjadi baris-baris
+
             $lines = explode("\n", htmlspecialchars($output));
-        
-            // Variabel untuk menghindari duplikasi
+
             $dupe = null;
-        
+
             foreach ($lines as $line) {
-                // Periksa apakah ini adalah duplikat dari sebelumnya
                 if ($line === $dupe) {
-                    continue; // Lewati baris jika duplikat
+                    continue;
                 }
-        
-                // Set baris saat ini sebagai duplikat untuk iterasi berikutnya
+
                 $dupe = $line;
-        
-                // Proses hanya jika baris tidak kosong
+
                 if (!empty(trim($line))) {
                     $preprocessScript = 'preprocess.py';
-        
-                    // Gunakan file sementara untuk menyimpan data besar
+
                     $temp_file = tempnam(sys_get_temp_dir(), 'data_');
                     file_put_contents($temp_file,  $line);
-        
-                    // Buat perintah Python dengan file sementara
+
                     $preprocessCommand = escapeshellcmd("python $preprocessScript " . escapeshellarg($temp_file));
                     $preprocessedOutput = shell_exec($preprocessCommand);
-        
-                    // Hapus file sementara setelah selesai
+
                     unlink($temp_file);
-        
-                    // Tambahkan hasil ke array data_crawling
+
                     array_push($data_crawling, array('source' => 'Instagram', 'original' => $line, 'preprocessed' => $preprocessedOutput, 'similarity' => 0.0));
                     array_push($sample_data, $preprocessedOutput);
                 }
             }
         }
-        
-        // elseif ($src == 'IG') {
-        //     $keyword = escapeshellarg($_POST['keyword']);
-        //     $pythonScript = 'insta_crawler.py';
-
-        //     $command = escapeshellcmd("python $pythonScript 2&>1");
-        //     $output = shell_exec($command);
-
-        //     $lines = explode("\n", htmlspecialchars($output));
-
-        //     foreach ($lines as $line) {
-        //         if (isset($dupe)) {
-        //             if ($line == $dupe) {
-        //                 $dupe = $line;
-        //             } else {
-        //                 if (!empty(trim($line))) {
-        //                     $preprocessScript = 'preprocess.py';
-        //                     $preprocessCommand = escapeshellcmd("python $preprocessScript " . escapeshellarg(str_replace(" ", "@@", $line)));
-        //                     $preprocessedOutput = shell_exec("$preprocessCommand");
-
-        //                     array_push($data_crawling, array('source' => 'Instagram', 'original' => $line, 'preprocessed' => $preprocessedOutput, 'similarity' => 0.0));
-        //                     array_push($sample_data, $preprocessedOutput);
-        //                 }
-        //             }
-        //         } else {
-        //             if (!empty(trim($line))) {
-        //                 $preprocessScript = 'preprocess.py';
-        //                 $preprocessCommand = escapeshellcmd("python $preprocessScript " . escapeshellarg(str_replace(" ", "@@", $line)));
-        //                 $preprocessedOutput = shell_exec("$preprocessCommand");
-
-        //                 array_push($data_crawling, array('source' => 'Instagram', 'original' => $line, 'preprocessed' => $preprocessedOutput, 'similarity' => 0.0));
-        //                 array_push($sample_data, $preprocessedOutput);
-        //             }
-        //         }
-        //     }
-        // }
     }
 
     array_push($sample_data, $_POST['keyword']);
@@ -186,45 +136,7 @@ if (isset($_POST['crawl'])) {
 
             $data_crawling[$i]['similarity'] = $result;
         }
-        // $_SESSION['data_crawling'] = $data_crawling;
     }
-    // if (isset($_SESSION['data_crawling'])) {
-    //     $data_crawling = $_SESSION['data_crawling'];
-    //     $total_results = count($data_crawling);
-    //     $paged_results = array_slice($data_crawling, $offset, $results_per_page); // Ambil hasil untuk halaman ini
-
-    //     // Tampilkan hasil paging
-    //     if (!empty($paged_results)) {
-    //         foreach ($paged_results as $row) {
-    //             echo "<b><u>Source:</u></b> " . $row['source'] . "<br>";
-    //             echo "<b><u>Original Text:</u></b><br>" . $row['original'] . "<br>";
-    //             echo "<b><u>Preprocessing Result:</u></b><br>" . $row['preprocessed'] . "<br>";
-    //             echo "<b><u>Similarity:</u></b> " . round($row["similarity"], 5);
-    //             echo "<hr>";
-    //         }
-    //     } else {
-    //         echo "No results to display.";
-    //     }
-
-    //     // Tampilkan navigasi paging
-    //     $total_pages = ceil($total_results / $results_per_page);
-
-    //     echo '<div style="text-align:center;">';
-    //     if ($page > 1) {
-    //         echo '<a href="?page=' . ($page - 1) . '">Previous</a> ';
-    //     }
-    //     for ($i = 1; $i <= $total_pages; $i++) {
-    //         if ($i == $page) {
-    //             echo '<strong>' . $i . '</strong> ';
-    //         } else {
-    //             echo '<a href="?page=' . $i . '">' . $i . '</a> ';
-    //         }
-    //     }
-    //     if ($page < $total_pages) {
-    //         echo '<a href="?page=' . ($page + 1) . '">Next</a>';
-    //     }
-    //     echo '</div>';
-    // }
 }
 ?>
 
@@ -334,15 +246,15 @@ if (isset($_POST['crawl'])) {
             <div class="mb-3 aligntextcenter">
                 <label class="form-label">Source</label><br>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="checkbox" name="source[]" id="sourceX" value="X">
+                    <input class="form-check-input" type="checkbox" name="source[]" id="sourceX" value="X" checked>
                     <label class="form-check-label" for="sourceX">X</label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="checkbox" name="source[]" id="sourceIG" value="IG">
+                    <input class="form-check-input" type="checkbox" name="source[]" id="sourceIG" value="IG" checked>
                     <label class="form-check-label" for="sourceIG">Instagram</label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="checkbox" name="source[]" id="sourceYT" value="YT">
+                    <input class="form-check-input" type="checkbox" name="source[]" id="sourceYT" value="YT" checked>
                     <label class="form-check-label" for="sourceYT">YouTube</label>
                 </div>
             </div>
@@ -351,7 +263,7 @@ if (isset($_POST['crawl'])) {
                 <label class="form-label">Similarity Method</label><br>
                 <div class="radio">
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="method" id="methodAsym" value="Asymetric">
+                        <input class="form-check-input" type="radio" name="method" id="methodAsym" value="Asymetric" checked>
                         <label class="form-check-label" for="methodAsym">Asymmetric</label>
                     </div>
                     <div class="form-check">

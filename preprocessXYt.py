@@ -3,11 +3,9 @@ import re
 from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 from Sastrawi.StopWordRemover.StopWordRemoverFactory import StopWordRemoverFactory
 
-# Initialize stemmer and stopword remover
 stemmer = StemmerFactory().create_stemmer()
 stopper = StopWordRemoverFactory().create_stop_word_remover()
 
-# Retrieve input text
 sendKeyword = sys.argv[1]
 sendKeyword = sendKeyword.split("@@")
 sendKeyword = list(filter(None, sendKeyword))

@@ -1,79 +1,100 @@
-import requests
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import io
+import time
 import sys
+from webdriver_manager.chrome import ChromeDriverManager
 
-# Masukkan API key YouTube Anda di sini
-instagram_api_key = 'EAATGnmSyGI4BOwKmFbeAXUCT4V1wrkwfMTcgOfqo6aVgc9M4vPe658CIXnuXx0EZCeUTUZCVRZCIJZBjkUdKntX655P4Qlzof8ZCyB3Hmhu1cgW7q4MZCFVMY322T9lKA6C1ZCLxw2VNlZAEbwX988OjtFnkxrRMW0FXkLFZCLR9mNex8wYxIBBuWUSYYAmnVDK1Os35BGzYFibKqUy9JRdpyIRygbaw8XAnqOOac'
+service = Service(ChromeDriverManager().install())
+driver = webdriver.Chrome(service=service)
 
-# Inisialisasi layanan YouTube API
-instagram = build('instagram', 'v3', developerKey=instagram_api_key)
-def search_posts_by_keyword(keyword, max_results=10):
-    """
-    Cari postingan Instagram berdasarkan kata kunci dalam caption.
-    """
-    url = f"https://graph.instagram.com/me/media?fields=id,caption,media_type,media_url,timestamp&access_token={ACCESS_TOKEN}"
-    response = requests.get(url)
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
-    if response.status_code != 200:
-        print(f"Error: {response.status_code}, {response.text}")
-        sys.exit(1)
+url = "https://www.instagram.com"
 
-    posts = response.json().get('data', [])
-    filtered_posts = []
+username = "comfydent.clothing"
+password = "comfyajarek"
 
-    for post in posts:
-        caption = post.get('caption', '')
-        if keyword.lower() in caption.lower():
-            filtered_posts.append({
-                'id': post['id'],
-                'caption': caption,
-                'media_url': post.get('media_url'),
-                'timestamp': post.get('timestamp')
-            })
-        if len(filtered_posts) >= max_results:
-            break
+def login_to_instagram(driver, username, password):
+    driver.get(url)
+    time.sleep(3)
 
-    return filtered_posts
+    username_input = driver.find_element(By.NAME, "username")
+    password_input = driver.find_element(By.NAME, "password")
+    username_input.send_keys(username)
+    password_input.send_keys(password)
 
-def get_post_comments(post_id, max_results=10):
-    """
-    Ambil komentar untuk sebuah postingan berdasarkan ID postingan.
-    """
-    url = f"https://graph.instagram.com/{post_id}/comments?fields=id,text,username&access_token={ACCESS_TOKEN}"
-    response = requests.get(url)
+    password_input.send_keys(Keys.RETURN)
+    time.sleep(4)
 
-    if response.status_code != 200:
-        print(f"Error fetching comments for post {post_id}: {response.status_code}, {response.text}")
-        return []
+    try:
+        not_now_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, "button._acan._acap._acas._aj1-._ap30"))
+        )
+        not_now_button.click()
+    except Exception as e:
+        print("No 'Not Now' button found or already dismissed.")
 
-    comments = response.json().get('data', [])
-    return comments[:max_results]
+def go_to_explore(driver):
+    try:
+        explore_button = driver.find_element(By.CSS_SELECTOR, "svg[aria-label='Explore']")
+        
+        explore_button.click()
+        time.sleep(5)
+    except Exception as e:
+        print(f"Error clicking explore button: {e}")
 
-if __name__ == '__main__':
-    if len(sys.argv) < 3:
-        print("Usage: python crawler_instagram.py <keyword> <max_results>")
-        sys.exit(1)
+def collect_captions_from_posts(driver, max_posts=10):
+    captions = []
 
-    keyword = sys.argv[1]
-    max_results = int(sys.argv[2])
+    try:
+        first_post = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, "div._aagw"))
+        )
+        first_post.click()
+        time.sleep(5)
 
-    # Pencarian postingan berdasarkan kata kunci
-    results = search_posts_by_keyword(keyword, max_results)
-    if not results:
-        print("Tidak ada postingan yang ditemukan.")
-        sys.exit()
+        for _ in range(max_posts):
+            try:
+                caption_element = driver.find_element(By.CSS_SELECTOR, "h1._ap3a._aaco._aacu._aacx._aad7._aade")
+                caption = caption_element.text
+                print(f"Captured Caption: {caption}")
+            except Exception as e:
+                print(f"Error fetching caption: {e}")
 
-    # Output postingan dan komentar
-    for index, post in enumerate(results, start=1):
-        print(f"\nPost {index}:")
-        print(f"Caption: {post['caption']}")
-        print(f"Media URL: {post['media_url']}")
-        print(f"Timestamp: {post['timestamp']}")
+            try:
+                next_button = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.CSS_SELECTOR, "svg[aria-label='Next']"))
+                )
+                next_button.click()
+                time.sleep(3)
+            except Exception as e:
+                print("No 'Next' button found or could not click.")
+                break
+    except Exception as e:
+        print(f"Error opening post: {e}")
 
-        # Ambil komentar untuk setiap postingan
-        comments = get_post_comments(post['id'])
-        if comments:
-            print("\nComments:")
-            for comment in comments:
-                print(f"- {comment['username']}: {comment['text']}")
-        else:
-            print("No comments available.")
+    return captions
+
+def main():
+    try:
+        login_to_instagram(driver, username, password)
+
+        go_to_explore(driver)
+
+        captions = collect_captions_from_posts(driver, max_posts=10)
+
+        for i, caption in enumerate(captions, start=1):
+            print(f"{i}. {caption}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+    finally:
+        driver.quit()
+
+if __name__ == "__main__":
+    main()
+

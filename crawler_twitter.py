@@ -66,9 +66,6 @@ if __name__ == '__main__':
 
     for i, tweet in enumerate(tweets, start=1):
         print(f"{tweet}")
-    # Output hasil pencarian
-    # for index, tweet in enumerate(tweets, start=1):
-    #     print(f"\nTweet {index}:")
     #     print(f"Username: @{tweet['username']}")
     #     print(f"Tanggal: {tweet['created_at']}")
     #     print(f"Konten: {tweet['content']}")

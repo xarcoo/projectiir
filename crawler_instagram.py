@@ -83,6 +83,7 @@ def collect_captions_from_posts(driver, max_posts=10):
 def main():
     try:
         login_to_instagram(driver, username, password)
+        time.sleep(4)
 
         go_to_explore(driver)
 
